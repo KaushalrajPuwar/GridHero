@@ -12,6 +12,7 @@ public:
     Ammo(const std::string &name, int durability);
     void use();
     bool isUsable() const;
+    std::string getName();
 };
 
 #endif

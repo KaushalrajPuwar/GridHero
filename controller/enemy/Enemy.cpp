@@ -1,26 +1,20 @@
 #include "Enemy.h"
 #include <iostream>
 
-Enemy::Enemy(const std::string &type) : type(type), x(0), y(0) {}
+Enemy::Enemy(const std::string &name, int health) : name(name), health(health), position(0, 0) {}
 
-void Enemy::moveTowards(int heroX, int heroY)
+void Enemy::setPosition(const Position &pos)
 {
-    if (x < heroX)
-        ++x;
-    if (y < heroY)
-        ++y;
-    std::cout << type << " moved to (" << x << ", " << y << ")" << std::endl;
+    position = pos;
 }
 
-void Enemy::display() const
+Position Enemy::getPosition() const
 {
-    std::cout << "Enemy: " << type << " at (" << x << ", " << y << ")" << std::endl;
+    return position;
 }
 
-// Add this method to reset the enemy's position
-void Enemy::setPosition(int newX, int newY)
+void Enemy::moveTowards(const Position &target, const std::vector<std::vector<int>> &grid)
 {
-    x = newX;
-    y = newY;
-    std::cout << type << " position reset to (" << x << ", " << y << ")" << std::endl;
+    // Implementation to move enemy using grid pathfinding
+    std::cout << name << " is moving towards target at (" << target.x << ", " << target.y << ").\n";
 }

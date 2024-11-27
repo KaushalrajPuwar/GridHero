@@ -2,21 +2,25 @@
 #define ENEMY_H
 
 #include <string>
+#include "../../controller/utilities/Position.h"
 
 class Enemy
 {
 protected:
-    std::string type; // Make this protected so derived classes can access it
-    int x, y;         // Position of the enemy on the grid
+    std::string name;
+    std::string type;
+    int health;
+    Position position; // Use Position object for storing position
 
 public:
-    // Constructor
-    Enemy(const std::string &type);
+    Enemy(const std::string &name, int health = 100);
 
-    // Methods
-    void moveTowards(int heroX, int heroY); // Move towards the hero
-    void display() const;                   // Display enemy's position
-    void setPosition(int newX, int newY);   // Reset position to (newX, newY)
+    void setPosition(const Position &pos); // Accept Position object
+    Position getPosition() const;
+
+    void moveTowards(const Position &target, const std::vector<std::vector<int>> &grid);
+
+    bool isAlive() const { return health > 0; }
 };
 
-#endif // ENEMY_H
+#endif

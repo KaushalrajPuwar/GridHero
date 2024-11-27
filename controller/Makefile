@@ -1,13 +1,12 @@
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra
+CXXFLAGS = -std=c++17 -Wall -Wextra -I./controller/utilities -I./player -I./enemy -I./inventory
 
 # List of object files
 OBJ = main.o \
       player/Player.o \
       enemy/Enemy.o enemy/Dragon.o \
       inventory/Storage.o inventory/Ammo.o \
-      utilities/GridUtils.o
 
 # Output executable
 TARGET = game
