@@ -2,6 +2,7 @@
 #define DRAGON_H
 
 #include "Enemy.h"
+#include<string>
 using namespace std;
 
 class Dragon : public Enemy

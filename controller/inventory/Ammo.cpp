@@ -2,7 +2,7 @@
 #include<string>
 using namespace std;
 
-Ammo::Ammo(const std::string &name, int durability) : name(name), durability(durability) {}
+Ammo::Ammo(const std::string &name, int durability,int damage) : name(name), durability(durability),damage(damage) {}
 
 void Ammo::use()
 {
@@ -17,3 +17,7 @@ bool Ammo::isUsable() const
 string Ammo::getName(){
     return name;
 }
+int Ammo::getdamage(){
+    return damage;
+}
+

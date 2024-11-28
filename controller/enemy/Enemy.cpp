@@ -1,20 +1,45 @@
 #include "Enemy.h"
 #include <iostream>
 
-Enemy::Enemy(const std::string &name, int health) : name(name), health(health), position(0, 0) {}
+Enemy::Enemy(const std::string &type) : type(type), x(0), y(0) {}
 
-void Enemy::setPosition(const Position &pos)
+ // Getter for player's X-coordinate
+    int Enemy:: getEnemyX(){
+        return x;
+    }
+    int Enemy::getEnemyY(){
+        return y;
+    }
+    void Enemy::setEnemyX(int ex){
+        x=ex;
+    }
+    void Enemy::setEnemyY(int ey){
+        y=ey;
+    }
+    void setPlayerX(int xc);
+    void setPlayerY(int yc);
+    // Getter for player's Y-coordinate
+    int getPlayerY();
+
+void Enemy::moveTowards(int heroX, int heroY)
 {
-    position = pos;
+    if (x < heroX)
+        ++x;
+    if (y < heroY)
+        ++y;
+    std::cout << type << " moved to (" << x << ", " << y << ")" << std::endl;
 }
 
-Position Enemy::getPosition() const
+void Enemy::display() const
 {
-    return position;
+    std::cout << "Enemy: " << type << " at (" << x << ", " << y << ")" << std::endl;
 }
 
-void Enemy::moveTowards(const Position &target, const std::vector<std::vector<int>> &grid)
+// Add this method to reset the enemy's position
+void Enemy::setPosition(int newX, int newY)
 {
-    // Implementation to move enemy using grid pathfinding
-    std::cout << name << " is moving towards target at (" << target.x << ", " << target.y << ").\n";
+    x = newX;
+    y = newY;
+    std::cout << type << " position reset to (" << x << ", " << y << ")" << std::endl;
 }
+   

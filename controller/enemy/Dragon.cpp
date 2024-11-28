@@ -1,9 +1,7 @@
 #include "Dragon.h"
 #include <iostream>
-#include <string>
-using namespace std;
 
-Dragon::Dragon(const string &type,int health,int damage, string name) : Enemy(type), health(health),damage(damage),name(name) {}
+Dragon::Dragon(const std::string &type,int health,int damage,string name) : Enemy(type), health(health),damage(damage),name(name) {}
 
 int Dragon:: gethealth()const{
     return health;

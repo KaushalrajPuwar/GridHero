@@ -1,76 +1,412 @@
 #include <iostream>
+#include <string>
 #include <vector>
+#include <sstream>
+#include "Frontend.h"
+#include "jni.h"
 #include "player/Player.h"
 #include "enemy/Enemy.h"
 #include "enemy/Dragon.h"
 #include "inventory/Storage.h"
 #include "inventory/Ammo.h"
-#include "utilities/Grid.h"
-#include "utilities/Position.h"
+#include "./Game.h"
+#include <algorithm>
+#include <cctype>
 
 using namespace std;
 
-int main()
+Player hero("Hero");
+Enemy enemy("Ogre");
+
+Game game1(10, 5);
+Game game2(8, 7);
+
+Ammo sword("Sword", 5, 70);
+
+Ammo dagger("Dagger", 1, 100);
+Ammo clawHammer("Claw Hammer", 1, 250);
+vector<Ammo> weapons = {sword, dagger, clawHammer};
+
+Dragon dragon = Dragon("Dragon", 1050, 20, "Fired Dragon");
+Dragon slime = Dragon("Dragon", 2000, 13, "slime");
+Dragon fangedBeast = Dragon("Dragon", 3000, 80, "Fanged Beast");
+int damagetoDragon;
+int damage;
+
+std::string trim(const std::string &str)
 {
-    Player hero("Hero");
-    Enemy enemy("Ogre");
-    Storage storage;
+    size_t start = str.find_first_not_of(" \t\n\r");
+    size_t end = str.find_last_not_of(" \t\n\r");
+    return (start == std::string::npos || end == std::string::npos) ? "" : str.substr(start, end - start + 1);
+}
 
-    // Define available weapons
-    Ammo sword("Sword", 5);
-    Ammo stick("Stick", 5);
-    Ammo dagger("Dagger", 30);
-    Ammo clawHammer("Claw Hammer", 50);
-    vector<Ammo> weapons = {stick, dagger, clawHammer};
+void handleLevel1()
+{
+    game1.initializeLevel(hero, enemy, 1);
+    game1.getGrid().displayGrid();
+    cout << "Level 1: Avoid the enemy on the grid and collect coins as much as possible to build the town hall!" << endl;
+}
 
-    // Initialize the grid and set initial positions for hero and enemy
-    vector<vector<int>> grid(10, vector<int>(10, 0));
-    Grid::initializeGrid(grid);
+void handleLevel2()
+{
+    game2.initializeLevel(hero, enemy, 2);
+    game2.getGrid().displayGrid();
+    cout << "Level 2: Avoid the enemy with restricted areas!" << endl;
+}
 
-    Position heroStart(9, 5);  // Bottom center
-    Position enemyStart(0, 5); // Top center
-    hero.move(heroStart, grid);
-    enemy.setPosition(enemyStart);
+void handleLevel3()
+{
 
-    int level = 1;
+    cout << "Level 3: Welcome to the Dragon Slayer game!" << endl;
+}
 
-    while (level <= 3)
+void handleMove(const string &direction, const string &level)
+{
+    if (level == "1")
     {
-        if (level == 1)
-        {
-            std::cout << "Level 1: Avoid the enemy on the grid!" << std::endl;
-            hero.playLevel1(enemy, storage, grid);
 
-            if (storage.getBuildings() >= 3)
-                level++;
-        }
-        else if (level == 2)
+        if (direction == "W" || direction == "w")
         {
-            std::cout << "Level 2: Avoid the enemy with restricted areas!" << std::endl;
-            hero.playLevel2(enemy, storage, sword, grid);
-
-            if (storage.hasItem("Sword"))
-                level++;
+            game1.movePlayer(-1, 0, hero, enemy);
         }
-        else if (level == 3)
+        else if (direction == "A" || direction == "a")
         {
-            std::cout << "Level 3: Welcome to the Dragon Slayer game!\n"
-                      << std::endl;
-            Dragon dragon("Dragon", 300, 20, "Fire Dragon");
-            hero.startgame(dragon, hero, weapons, grid);
-            break;
+            game1.movePlayer(0, -1, hero, enemy);
         }
+        else if (direction == "S" || direction == "s")
+        {
+            game1.movePlayer(1, 0, hero, enemy);
+        }
+        else if (direction == "D" || direction == "d")
+        {
+            game1.movePlayer(0, 1, hero, enemy);
+        }
+        else
+        {
+            std::cout << "You exited the game.\n";
+            return;
+        }
+        game1.getGrid().displayGrid();
+        cout << "movement done.\n";
     }
-
-    // Final game outcome based on hero's health and dragon status
-    if (hero.isAlive() && level == 3)
+    else if (level == "2")
     {
-        std::cout << "Congratulations! You defeated the dragon and won the game!" << std::endl;
+
+        if (direction == "W" || direction == "w")
+        {
+            game2.movePlayer(-1, 0, hero, enemy);
+        }
+        else if (direction == "A" || direction == "a")
+        {
+            game2.movePlayer(0, -1, hero, enemy);
+        }
+        else if (direction == "S" || direction == "s")
+        {
+            game2.movePlayer(1, 0, hero, enemy);
+        }
+        else if (direction == "D" || direction == "d")
+        {
+            game2.movePlayer(0, 1, hero, enemy);
+        }
+        else
+        {
+            std::cout << "You exited the game.\n";
+            return;
+        }
+        game2.getGrid().displayGrid();
+
+        cout << "movement done.\n";
+    }
+}
+
+void handleAction(const string &action)
+{
+
+    if (action == "1")
+    {
+
+        cout << "Fight Dragon" << dragon.getName() << "!\n";
+    }
+    else if (action == "2")
+    {
+        cout << "Enter Store.\n";
+    }
+    else if (action == "3")
+    {
+
+        cout << "Go to Cave. Who would you like to fight?\n";
+    }
+    else if (action == "4")
+    {
+        cout << "Exit game.\n";
+    }
+}
+void playandWIn(Dragon &dragon, const string &action)
+{
+    if (action == "1")
+    {
+
+        Ammo cweapon = hero.getStorage().getItem().back();
+        if (cweapon.isUsable())
+        {
+            cweapon.use();
+            damagetoDragon = cweapon.getdamage();
+            dragon.takeDamage(damagetoDragon);
+        }
+        else
+        {
+            cout << "Sorry, You don't have chances left for your current weapon to attack.Go to store to buy weapons.\n";
+            return;
+        }
+
+        if (!dragon.isDefeated() && hero.isAlive())
+        {
+            damage = dragon.getdamage();
+            hero.takeDamage(damage);
+        }
+
+        if (dragon.isDefeated() && hero.isAlive())
+        {
+            cout << "You defeated the dragon!\n";
+            hero.gainXP(50);
+            hero.earnCoins(100);
+            hero.showStatus();
+            return;
+        }
+        else if (!hero.isAlive())
+        {
+            cout << "The dragon defeated you. Game over.\n";
+            return;
+        }
+        hero.showStatus();
+        cout << "you attacked the dragon " << dragon.getName() << " for " << damagetoDragon << " damage.\n";
+    }
+    else if (action == "2")
+    {
+
+        dragon.takeDamage(30);
+
+        if (!dragon.isDefeated() && hero.isAlive())
+        {
+            damage = dragon.getdamage();
+            hero.takeDamage(damage);
+        }
+
+        if (dragon.isDefeated() && hero.isAlive())
+        {
+            cout << "You defeated the dragon!\n";
+            hero.gainXP(50);
+            hero.earnCoins(100);
+            hero.showStatus();
+            return;
+        }
+        else if (!hero.isAlive())
+        {
+            cout << "The dragon defeated you.Game over.\n";
+            return;
+        }
+        hero.showStatus();
+        cout << "You dodged the dragon " << dragon.getName() << " attack.\n";
+    }
+    else if (action == "3")
+    {
+        cout << "Enter store.\n";
     }
     else
     {
-        std::cout << "Game over. Better luck next time!" << std::endl;
+        cout << "invalid choice.Try again.\n";
+    }
+}
+void handledragonAction(const string &action, const string &dragonName)
+{
+    if (dragonName == "slime")
+    {
+        playandWIn(slime, action);
     }
 
-    return 0;
+    else if (dragonName == "FangedBeast")
+    {
+        playandWIn(fangedBeast, action);
+    }
+    else
+    {
+        playandWIn(dragon, action);
+    }
+}
+
+void handleStoreAction(const string &action)
+{
+
+    if (action == "1")
+    {
+        hero.buyHealth();
+    }
+    else if (action == "2")
+    {
+        hero.addWeapon(weapons);
+    }
+    else if (action == "3")
+    {
+        cout << "Go back to fight" << endl;
+    }
+    else
+    {
+        cout << "Invalid store action!" << endl;
+    }
+}
+
+void handleCaveAction(const string &choice)
+{
+
+    if (choice == "slime")
+    {
+        cout << "Battle completed with " + choice << endl;
+    }
+    else if (choice == "FangedBeast")
+    {
+        cout << "Battle completed with " + choice << endl;
+    }
+    else
+    {
+        cout << "Invalid monster!" << endl;
+    }
+}
+
+string command = "";
+
+extern "C"
+{
+    JNIEXPORT void JNICALL Java_Frontend_startLevel1(JNIEnv *env, jobject obj)
+    {
+        handleLevel1();
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_startLevel2(JNIEnv *env, jobject obj)
+    {
+        handleLevel2();
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_startLevel3(JNIEnv *env, jobject obj)
+    {
+        handleLevel3();
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_movePlayer(JNIEnv *env, jobject obj, jstring direction, jstring level)
+    {
+        const char *directionChars = env->GetStringUTFChars(direction, nullptr);
+        const char *levelChars = env->GetStringUTFChars(level, nullptr);
+        std::string directionVal(directionChars);
+        std::string levelVal(levelChars);
+        handleMove(directionVal, levelVal);
+        env->ReleaseStringUTFChars(direction, directionChars);
+        env->ReleaseStringUTFChars(level, levelChars);
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_performAction(JNIEnv *env, jobject obj, jstring action)
+    {
+        const char *actionChars = env->GetStringUTFChars(action, nullptr);
+        std::string actionVal(actionChars);
+        handleAction(actionVal);
+        env->ReleaseStringUTFChars(action, actionChars);
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_performDragonAction(JNIEnv *env, jobject obj, jstring action, jstring dragonName)
+    {
+        const char *actionChars = env->GetStringUTFChars(action, nullptr);
+        const char *dragonnameChars = env->GetStringUTFChars(dragonName, nullptr);
+        std::string actionVal(actionChars);
+        std::string dragonnameVal(dragonnameChars);
+        handledragonAction(actionVal, dragonnameVal);
+        env->ReleaseStringUTFChars(action, actionChars);
+        env->ReleaseStringUTFChars(dragonName, dragonnameChars);
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_performStoreAction(JNIEnv *env, jobject obj, jstring storeChoice)
+    {
+        const char *storechoiceChars = env->GetStringUTFChars(storeChoice, nullptr);
+        std::string storechoiceVal(storechoiceChars);
+        handleStoreAction(storechoiceVal);
+        env->ReleaseStringUTFChars(storeChoice, storechoiceChars);
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_performCaveAction(JNIEnv *env, jobject obj, jstring caveChoice)
+    {
+        const char *cavechoiceChars = env->GetStringUTFChars(caveChoice, nullptr);
+        std::string cavechoiceVal(cavechoiceChars);
+        handleCaveAction(cavechoiceVal);
+        env->ReleaseStringUTFChars(caveChoice, cavechoiceChars);
+    }
+
+    JNIEXPORT void JNICALL Java_Frontend_exitGame(JNIEnv *env, jobject obj)
+    {
+        cout << "Exiting game backend." << endl;
+    }
+}
+
+int main()
+{
+    string command;
+    while (getline(cin, command))
+    {
+        istringstream iss(command);
+        string action;
+        iss >> action;
+
+        if (trim(action) == "level1")
+        {
+            handleLevel1();
+        }
+        else if (trim(action) == "level2")
+        {
+            handleLevel2();
+        }
+        else if (trim(action) == "level3")
+        {
+            handleLevel3();
+        }
+        else if (trim(action) == "move")
+        {
+            string direction, Level;
+            iss >> direction >> Level;
+            handleMove(direction, Level);
+            // handleMove(direction);
+        }
+        else if (trim(action) == "action")
+        {
+            string specificAction;
+            iss >> specificAction;
+            handleAction(specificAction);
+        }
+        else if (trim(action) == "dragon_action")
+        {
+            string specificAction;
+            string dragonName;
+            iss >> specificAction >> dragonName;
+            handledragonAction(specificAction, dragonName);
+        }
+
+        else if (trim(action) == "store_action")
+        {
+            string storeChoice;
+            iss >> storeChoice;
+            handleStoreAction(storeChoice);
+        }
+        else if (trim(action) == "cave_action")
+        {
+            string caveChoice;
+            iss >> caveChoice;
+            handleCaveAction(caveChoice);
+        }
+        else if (trim(action) == "exit")
+        {
+            cout << "Exiting game backend." << endl;
+            break;
+        }
+        else
+        {
+            cout << "Unknown command: " << command << endl;
+        }
+    }
+        return 0;
+
 }

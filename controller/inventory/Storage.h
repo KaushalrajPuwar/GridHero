@@ -1,17 +1,20 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
-#include <unordered_map>
+#include <vector>
 #include <string>
+#include "./Ammo.h"
+
 
 class Storage
 {
-    std::unordered_map<std::string, int> items;
+    vector<Ammo> weapons;
 
 public:
-    void addItem(const std::string &item, int quantity = 1);
-    bool hasItem(const std::string &item) const;
-    int getBuildings() const;
+    Storage(Ammo &stick);
+    void addItem(Ammo &item, int quantity = 1);
+    bool hasItem(Ammo &item) const;
+    vector<Ammo> getItem();
 };
 
 #endif

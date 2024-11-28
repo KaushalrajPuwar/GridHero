@@ -1,16 +1,21 @@
 #include "Storage.h"
+#include "./Ammo.h"
+#include <algorithm>
 
-void Storage::addItem(const std::string &item, int quantity)
+Storage:: Storage(Ammo &stick): weapons({}){
+    addItem(stick);
+}
+void Storage::addItem(Ammo &item, int quantity)
 {
-    items[item] += quantity;
+    weapons.push_back(item);
+    //items[item] += quantity;
 }
 
-bool Storage::hasItem(const std::string &item) const
+bool Storage::hasItem(Ammo &item) const
 {
-    return items.find(item) != items.end() && items.at(item) > 0;
+    return std::find(weapons.begin(),weapons.end(),item) != weapons.end();
 }
 
-int Storage::getBuildings() const
-{
-    return items.count("Building") ? items.at("Building") : 0;
+vector<Ammo> Storage::getItem(){
+    return weapons;
 }
