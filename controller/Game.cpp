@@ -133,26 +133,30 @@ bool Game::isValidPosition(int x, int y)
 }
 void Game::movePlayer(int dx, int dy, Player &player, Enemy &enemy)
 {
+    bool flag = false;
     int nx = playerX + dx, ny = playerY + dy;
     if (isValidPosition(nx, ny))
     {
         if (nx == enemy.getEnemyX() && ny == enemy.getEnemyY())
         {
-            cout << "Invalid move" << endl;
+            cout << "🟥 Invalid move" << endl;
+            flag = true;
         }
         if (grid.getCell(nx, ny) == INACCESSIBLE)
         {
             if (player.getxp() < 10)
             {
-                cout << "You can't move onto an inaccessible block" << endl;
+                cout << "🟥 You can't move onto an inaccessible block!" << endl;
+                flag = true;
             }
             player.losexp(10);
         }
         if (nx == previousPlayerPos[0] && ny == previousPlayerPos[1])
         {
-            cout << "Invalid move! You cannot move back to the previous cell directly." << endl;
+            cout << "🟥 Invalid move! You cannot move back to the previous cell directly." << endl;
+            flag = true;
         }
-        else
+        if(flag == false)
         {
             grid.setCell(playerX, playerY, EMPTY);
             previousPlayerPos[0] = playerX;
@@ -171,7 +175,7 @@ void Game::movePlayer(int dx, int dy, Player &player, Enemy &enemy)
     }
     else
     {
-        cout << "Invalid move! You can't move onto an inaccessible block or outside the grid." << endl;
+        cout << "🟥 Invalid move! You can't move onto an inaccessible block or outside the grid!" << endl;
     }
     auto [newEnemyX, newEnemyY] = getNextEnemyMove();
     grid.setCell(enemyX, enemyY, EMPTY);
@@ -188,7 +192,7 @@ void Game::movePlayer(int dx, int dy, Player &player, Enemy &enemy)
             if (player.getCoins() >= 500)
             {
                 player.gainXP(20);
-                std::cout << "Level 2 complete! Coins: " << player.getCoins() << std::endl;
+                std::cout << "Level 2 complete! Coins: " << player.getCoins() << "\n" << std::endl;
                 return;
             }
         }
@@ -198,13 +202,13 @@ void Game::movePlayer(int dx, int dy, Player &player, Enemy &enemy)
             {
                 nextLevel(player, enemy);
                 player.gainXP(10);
-                std::cout << "Level 1 complete! Coins: " << player.getCoins() << std::endl;
+                std::cout << "Level 1 complete! Coins: " << player.getCoins() << "\n" << std::endl;
                 return;
             }
         }
         cout << "Coins you collected " << player.getCoins() << endl;
-        cout << "Sorry you don't have enough coins to build town to go to next level" << endl;
-        cout << "You have to play again" << endl;
+        cout << "Sorry you don't have enough coins to build Town to go to next level" << endl;
+        cout << "You have to play again\n" << endl;
         initializeLevel(player, enemy, player.getplayerLevel());
         return;
     }

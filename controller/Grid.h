@@ -6,12 +6,13 @@
 #include <ctime>
 using namespace std;
 
-enum Cell {
+enum Cell
+{
     EMPTY = '.',
     PLAYER = 'P',
     ENEMY = 'E',
     COIN = 'C',
-    INACCESSIBLE='*'
+    INACCESSIBLE = 'x'
 };
 
 class Grid {

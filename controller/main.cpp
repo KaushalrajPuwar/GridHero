@@ -27,8 +27,8 @@ Ammo dagger("Dagger", 1, 100);
 Ammo clawHammer("Claw Hammer", 1, 250);
 vector<Ammo> weapons = {sword, dagger, clawHammer};
 
-Dragon dragon = Dragon("Dragon", 1050, 20, "Fired Dragon");
-Dragon slime = Dragon("Dragon", 2000, 13, "slime");
+Dragon dragon = Dragon("Dragon", 1050, 20, "Fire Dragon");
+Dragon slime = Dragon("Dragon", 2000, 13, "Slime");
 Dragon fangedBeast = Dragon("Dragon", 3000, 80, "Fanged Beast");
 int damagetoDragon;
 int damage;
@@ -87,7 +87,7 @@ void handleMove(const string &direction, const string &level)
             return;
         }
         game1.getGrid().displayGrid();
-        cout << "movement done.\n";
+        cout << "Movement done.\n";
     }
     else if (level == "2")
     {
@@ -115,7 +115,7 @@ void handleMove(const string &direction, const string &level)
         }
         game2.getGrid().displayGrid();
 
-        cout << "movement done.\n";
+        cout << "Movement done.\n";
     }
 }
 
@@ -124,8 +124,7 @@ void handleAction(const string &action)
 
     if (action == "1")
     {
-
-        cout << "Fight Dragon" << dragon.getName() << "!\n";
+        cout << "Fight Dragon: " << dragon.getName() << "!\n";
     }
     else if (action == "2")
     {
@@ -133,12 +132,11 @@ void handleAction(const string &action)
     }
     else if (action == "3")
     {
-
         cout << "Go to Cave. Who would you like to fight?\n";
     }
     else if (action == "4")
     {
-        cout << "Exit game.\n";
+        cout << "\n";
     }
 }
 void playandWIn(Dragon &dragon, const string &action)
@@ -155,7 +153,7 @@ void playandWIn(Dragon &dragon, const string &action)
         }
         else
         {
-            cout << "Sorry, You don't have chances left for your current weapon to attack.Go to store to buy weapons.\n";
+            cout << "Sorry, You don't have chances left for your current weapon to attack. Go to store to buy weapons.\n";
             return;
         }
 
@@ -175,11 +173,11 @@ void playandWIn(Dragon &dragon, const string &action)
         }
         else if (!hero.isAlive())
         {
-            cout << "The dragon defeated you. Game over.\n";
+            cout << "The dragon defeated you. Game over. 💀\n";
             return;
         }
         hero.showStatus();
-        cout << "you attacked the dragon " << dragon.getName() << " for " << damagetoDragon << " damage.\n";
+        cout << "You attacked the dragon " << dragon.getName() << " for " << damagetoDragon << " damage.\n";
     }
     else if (action == "2")
     {
@@ -202,7 +200,7 @@ void playandWIn(Dragon &dragon, const string &action)
         }
         else if (!hero.isAlive())
         {
-            cout << "The dragon defeated you.Game over.\n";
+            cout << "The dragon defeated you. Game over. 💀\n";
             return;
         }
         hero.showStatus();
@@ -212,14 +210,10 @@ void playandWIn(Dragon &dragon, const string &action)
     {
         cout << "Enter store.\n";
     }
-    else
-    {
-        cout << "invalid choice.Try again.\n";
-    }
 }
 void handledragonAction(const string &action, const string &dragonName)
 {
-    if (dragonName == "slime")
+    if (dragonName == "Slime")
     {
         playandWIn(slime, action);
     }
@@ -321,92 +315,30 @@ extern "C"
         env->ReleaseStringUTFChars(dragonName, dragonnameChars);
     }
 
-    JNIEXPORT void JNICALL Java_Frontend_performStoreAction(JNIEnv *env, jobject obj, jstring storeChoice)
+    JNIEXPORT void JNICALL Java_Frontend_performStoreAction(JNIEnv *env, jobject obj, jstring action)
     {
-        const char *storechoiceChars = env->GetStringUTFChars(storeChoice, nullptr);
-        std::string storechoiceVal(storechoiceChars);
-        handleStoreAction(storechoiceVal);
-        env->ReleaseStringUTFChars(storeChoice, storechoiceChars);
+        const char *actionChars = env->GetStringUTFChars(action, nullptr);
+        std::string actionVal(actionChars);
+        handleStoreAction(actionVal);
+        env->ReleaseStringUTFChars(action, actionChars);
     }
 
-    JNIEXPORT void JNICALL Java_Frontend_performCaveAction(JNIEnv *env, jobject obj, jstring caveChoice)
+    JNIEXPORT void JNICALL Java_Frontend_performCaveAction(JNIEnv *env, jobject obj, jstring monster)
     {
-        const char *cavechoiceChars = env->GetStringUTFChars(caveChoice, nullptr);
-        std::string cavechoiceVal(cavechoiceChars);
-        handleCaveAction(cavechoiceVal);
-        env->ReleaseStringUTFChars(caveChoice, cavechoiceChars);
+        const char *monsterChars = env->GetStringUTFChars(monster, nullptr);
+        std::string monsterVal(monsterChars);
+        handleCaveAction(monsterVal);
+        env->ReleaseStringUTFChars(monster, monsterChars);
     }
 
     JNIEXPORT void JNICALL Java_Frontend_exitGame(JNIEnv *env, jobject obj)
     {
-        cout << "Exiting game backend." << endl;
+        cout << "Exiting current menu" << endl;
     }
 }
 
 int main()
 {
-    string command;
-    while (getline(cin, command))
-    {
-        istringstream iss(command);
-        string action;
-        iss >> action;
-
-        if (trim(action) == "level1")
-        {
-            handleLevel1();
-        }
-        else if (trim(action) == "level2")
-        {
-            handleLevel2();
-        }
-        else if (trim(action) == "level3")
-        {
-            handleLevel3();
-        }
-        else if (trim(action) == "move")
-        {
-            string direction, Level;
-            iss >> direction >> Level;
-            handleMove(direction, Level);
-            // handleMove(direction);
-        }
-        else if (trim(action) == "action")
-        {
-            string specificAction;
-            iss >> specificAction;
-            handleAction(specificAction);
-        }
-        else if (trim(action) == "dragon_action")
-        {
-            string specificAction;
-            string dragonName;
-            iss >> specificAction >> dragonName;
-            handledragonAction(specificAction, dragonName);
-        }
-
-        else if (trim(action) == "store_action")
-        {
-            string storeChoice;
-            iss >> storeChoice;
-            handleStoreAction(storeChoice);
-        }
-        else if (trim(action) == "cave_action")
-        {
-            string caveChoice;
-            iss >> caveChoice;
-            handleCaveAction(caveChoice);
-        }
-        else if (trim(action) == "exit")
-        {
-            cout << "Exiting game backend." << endl;
-            break;
-        }
-        else
-        {
-            cout << "Unknown command: " << command << endl;
-        }
-    }
-        return 0;
+    return 0;
 
 }

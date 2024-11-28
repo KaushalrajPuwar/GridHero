@@ -1,5 +1,4 @@
 #include "Player.h"
-//#include "../enemy/Dragon.h"
 #include "../Grid.h"
 #include "../inventory/Storage.h"
 #include "../enemy/Enemy.h"
@@ -8,8 +7,8 @@
 #include "../Game.h"
 #include <iostream>
 #include<vector>
-//#include <bits/stdc++.h>
 using namespace std;
+
 Ammo stick("stick",5,30);
 Player::Player(const std::string &name) : name(name), health(100),coins(0),xp(0),currentWeapon(0), storage(stick) {
     
@@ -43,17 +42,6 @@ int Player:: getxp(){
     return xp;
 }
 
-
-
-    
-    //game.nextLevel(player,enemy);
-    
-
-
-
-
-
-
 void Player:: showStatus(){
         cout<<"Player status"<<endl;
         cout << "XP: " << xp << ", Health: " << health << ", Gold coins: " << coins << endl;
@@ -80,13 +68,10 @@ void Player:: showStatus(){
             storage.addItem(weapons[currentWeapon]);
             
             cout << "You bought a " << weapons[currentWeapon].getName() << ".\n";
-            cout<<"Exiting store.\n";
         } else if (currentWeapon == weapons.size() - 1) {
-            cout << "You already have the most powerful weapon!\n";
-            cout<<"Exiting store.\n";
+            cout <<"You already have the most powerful weapon!\n";
         } else {
             cout << "Not enough gold.\n";
-            cout<<"Exiting store.\n";
         }
     }
 
